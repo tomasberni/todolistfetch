@@ -3,7 +3,7 @@ import React, {useState, useEffect} from "react";
 const Home = () => {
     const [input, setInput] = useState("");
     const [todos, setTodos] = useState([]);
-    const [todosEnServer, setTodosEnServer] = useState([])
+    //const [todosEnServer, setTodosEnServer] = useState([])
 
 
     function handleInput(e) {
@@ -12,69 +12,79 @@ const Home = () => {
     console.log(input)
 
     const handleClick = () => {
-        if (input.length === 0) {
+        if (input.length === 0) { //si la longitud del input=0
             alert("Debe ingresar un valor")
         } else {
-            setTodos([...todos, {"label":input, "done":false}]);
+            setTodos([...todos, {label:input, done:false}]);
 			setInput("")
         }
     }
     console.log(todos);
 
-    const clickBorrar = () => {
-        setTodos([])
-    }
+    // const clickBorrar = () => {
+    //     setTodos([])
+    // }
+
+
+    function crearUser(){
+		fetch(`https://assets.breatheco.de/apis/fake/todos/user/tomasberni223`,
+		{method: 'POST', 
+		headers: {
+			'Content-Type': 'application/json'},
+		body: JSON.stringify([])
+	  })
+	}
+
 
     useEffect(() => {
-        // crearUser() // Solo necesito esta funcion una vez     
+        // crearUser() // Solo necesito esta funcion una vez 
+        getTodos()    
     }, [])
 
-//   useEffect(() => {
-//     getTodos()
-//   uptdateTodos()
-//   },[todos])
+   useEffect(() => {
+    //getTodos()
+ uptdateTodos()
+ },[todos])
 
-  function crearUser(){
-    fetch(`https://assets.breatheco.de/apis/fake/todos/user/tomasberni22`,
-    {method: 'POST', 
-    headers: {
-        'Content-Type': 'application/json'},
-    body: JSON.stringify([])
-  })
-    .then((response)=>response.json())
-    .then((data)=>console.log(data))
-}
+ 
 
     function getTodos(){
-		fetch(``,
+		fetch(`https://assets.breatheco.de/apis/fake/todos/user/tomasberni223`,
 		{method: 'GET',
 })
 		.then((response)=>response.json())
-		.then((data)=>setTodosEnServer(data))
+		.then((data)=>setTodos(data))
         .then((data)=>console.log(data))
 	}
 
 
     function uptdateTodos(){
-		fetch(`https://assets.breatheco.de/apis/fake/todos/user/tomasberni22`,
+		fetch(`https://assets.breatheco.de/apis/fake/todos/user/tomasberni223`,
 		{method: 'PUT', 
 		headers: {
 			'Content-Type': 'application/json'},
 		body: JSON.stringify(todos)
 	  })
 		.then((response)=>response.json())
-		.then((data)=>console.log(todosEnServer))
+	    .then((response)=>console.log(response))
 	}
+    console.log(todos);
 
     function killTodos(){
-		fetch(`https://assets.breatheco.de/apis/fake/todos/user/tomasberni22`,
+		fetch(`https://assets.breatheco.de/apis/fake/todos/user/tomasberni223`,
 		{method: 'DELETE', 
 		headers: {
 			'Content-Type': 'application/json'}
 	  })
 		.then((response)=>response.json())
 		.then((data)=>console.log(data))
+
 	}
+    function eliminar(id){
+
+        setTodos(todos.filter((item, index) => index != id))
+
+    }
 
     return (
         <div className="container">
@@ -98,30 +108,26 @@ const Home = () => {
                     </div>
                     <div id="contenedorTodos" className="text-light">
                         {
-                        todos.map((item, i) => (
+                        todos.map((item, id) => (
                             <div className="row d-flex m-2"  style={{borderRadius:"30px",backgroundColor: "rgb(10, 19, 214)"}}>
                                 <div className="col-6">
-                                    <h5 className="m-2">{item}</h5>
+                                    <h5 className="m-2" key={id}>{item.label}</h5>
                                 </div>
                                 <div className="col-6 text-end">
                                     <i className="fas fa-trash-alt align-items-end m-2 pt-1"
                                         onClick={
-                                            () => setTodos(todos.filter((elementoDiv, currentIndex) => index != currentIndex))
+                                            () => eliminar(id)
                                     }></i>
                                 </div>
                             </div>
                         ))
                     } </div>
                     <div id="contadorTodos">
-                        <p className="text-light mt-3"> {
+                        <p className="text- mt-3"> Quedan {
                             todos.length
-                        }
+                        } tareas
 </p>
                     </div>
-                    <button onClick={clickBorrar}
-                        className="btn btn-warning"
-                        type="button"
-                        id="button-addon1">Borrar Todo</button>
                 </div>
             </div>
         </div>
